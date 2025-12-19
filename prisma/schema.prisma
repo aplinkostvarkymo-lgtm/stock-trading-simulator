@@ -1,0 +1,117 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum TransactionType {
+  BUY
+  SELL
+}
+
+model User {
+  id            String    @id @default(cuid())
+  email         String    @unique
+  emailVerified DateTime?
+  name          String?
+  password      String?   // For credentials auth
+  image         String?
+  balance       Decimal   @default(100000.00) @db.Decimal(15, 2)
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  accounts     Account[]
+  sessions     Session[]
+  holdings     Holding[]
+  transactions Transaction[]
+  watchlist    Watchlist[]
+
+  @@index([email])
+}
+
+model Account {
+  id                String  @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String? @db.Text
+  access_token      String? @db.Text
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String? @db.Text
+  session_state     String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+  @@index([userId])
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+}
+
+model Holding {
+  id           String   @id @default(cuid())
+  userId       String
+  symbol       String   // Stock ticker (e.g., "AAPL")
+  companyName  String
+  quantity     Int      // Number of shares
+  averagePrice Decimal  @db.Decimal(15, 2) // Average purchase price per share
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, symbol])
+  @@index([userId])
+  @@index([symbol])
+}
+
+model Transaction {
+  id           String          @id @default(cuid())
+  userId       String
+  type         TransactionType
+  symbol       String          // Stock ticker
+  companyName  String
+  quantity     Int             // Number of shares
+  price        Decimal         @db.Decimal(15, 2) // Price per share at transaction
+  total        Decimal         @db.Decimal(15, 2) // Total transaction amount
+  balanceAfter Decimal         @db.Decimal(15, 2) // User balance after transaction
+  timestamp    DateTime        @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([timestamp])
+  @@index([symbol])
+}
+
+model Watchlist {
+  id          String   @id @default(cuid())
+  userId      String
+  symbol      String   // Stock ticker
+  companyName String
+  addedAt     DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, symbol])
+  @@index([userId])
+}
+
