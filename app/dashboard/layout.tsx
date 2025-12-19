@@ -69,12 +69,20 @@ export default async function DashboardLayout({
         {/* User Info & Sign Out */}
         <div className="p-4 border-t border-terminal-border">
           <div className="flex items-center gap-3 mb-3">
-            <div className="w-10 h-10 bg-accent-blue rounded-full flex items-center justify-center text-white font-bold">
-              {session.user.name?.[0]?.toUpperCase() || 'U'}
-            </div>
+            {session.user.image ? (
+              <img
+                src={session.user.image}
+                alt={session.user.name || 'User'}
+                className="w-10 h-10 rounded-full border-2 border-accent-blue"
+              />
+            ) : (
+              <div className="w-10 h-10 bg-accent-blue rounded-full flex items-center justify-center text-white font-bold">
+                {session.user.name?.[0]?.toUpperCase() || 'U'}
+              </div>
+            )}
             <div className="flex-1 min-w-0">
               <p className="text-sm font-semibold text-terminal-text truncate">
-                {session.user.name}
+                {session.user.name || 'User'}
               </p>
               <p className="text-xs text-terminal-muted truncate">
                 {session.user.email}

@@ -85,7 +85,7 @@ export const { auth, signIn, signOut, handlers } = NextAuth({
       }
       return session
     },
-    async signIn({ user, account }) {
+    async signIn({ user, account, profile }) {
       // For OAuth providers, ensure user has initial balance
       if (account?.provider === 'google') {
         const existingUser = await prisma.user.findUnique({
@@ -93,12 +93,23 @@ export const { auth, signIn, signOut, handlers } = NextAuth({
         })
         
         if (!existingUser) {
-          // User will be created by adapter, but we need to set initial balance
-          // This is handled in the signup flow
+          // New Google user - will be created by adapter
+          // We'll set initial balance after creation
           return true
         }
       }
       return true
+    },
+  },
+  events: {
+    async createUser({ user }) {
+      // Set initial balance for new OAuth users
+      const initialBalance = parseFloat(env.INITIAL_BALANCE || '100000')
+      
+      await prisma.user.update({
+        where: { id: user.id },
+        data: { balance: initialBalance },
+      })
     },
   },
 })

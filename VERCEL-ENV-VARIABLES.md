@@ -75,27 +75,49 @@ NODE_ENV=production
 
 ## 🔒 Optional Environment Variables
 
-### For Google OAuth (if you want Google Sign-In):
+### For Google OAuth (HIGHLY RECOMMENDED)
+
+The app supports **"Sign in with Google"** for a better user experience!
 
 #### GOOGLE_CLIENT_ID
-**Get from:** https://console.cloud.google.com  
-**Steps:**
-1. Create a new project
-2. Enable Google+ API
-3. Create OAuth 2.0 credentials
-4. Add redirect URI: `https://your-app.vercel.app/api/auth/callback/google`
-5. Copy Client ID
+
+**Get from:** https://console.cloud.google.com
+
+**Setup Steps:**
+1. Go to https://console.cloud.google.com
+2. Create a new project (or select existing)
+3. Click **"APIs & Services"** → **"Credentials"**
+4. Click **"Create Credentials"** → **"OAuth client ID"**
+5. Choose **"Web application"**
+6. Add **Authorized JavaScript origins:**
+   - Development: `http://localhost:3000`
+   - Production: `https://your-app.vercel.app`
+7. Add **Authorized redirect URIs:**
+   - Development: `http://localhost:3000/api/auth/callback/google`
+   - Production: `https://your-app.vercel.app/api/auth/callback/google`
+8. Click **"Create"**
+9. Copy the **Client ID**
 
 ```
 GOOGLE_CLIENT_ID=123456789-abc123def456.apps.googleusercontent.com
 ```
 
 #### GOOGLE_CLIENT_SECRET
-**Get from:** Same as above (Google Cloud Console)
+
+**Get from:** Same credentials page as above
+
+After creating OAuth client ID, you'll see both:
+- **Client ID** (use for GOOGLE_CLIENT_ID)
+- **Client Secret** (use for GOOGLE_CLIENT_SECRET)
 
 ```
 GOOGLE_CLIENT_SECRET=GOCSPX-abc123def456ghi789
 ```
+
+**⚠️ Important:**
+- Keep Client Secret private (never commit to Git)
+- You need BOTH Client ID and Client Secret for Google sign-in to work
+- After deployment, update redirect URI to your Vercel domain
 
 ---
 
@@ -110,10 +132,18 @@ TWELVEDATA_API_KEY=<your-api-key>
 INITIAL_BALANCE=100000
 NODE_ENV=production
 
-# Optional Variables (for Google OAuth)
-GOOGLE_CLIENT_ID=
-GOOGLE_CLIENT_SECRET=
+# Highly Recommended (for Google OAuth)
+GOOGLE_CLIENT_ID=123456789-abc123def456.apps.googleusercontent.com
+GOOGLE_CLIENT_SECRET=GOCSPX-abc123def456ghi789
 ```
+
+**Note:** Google OAuth is optional but highly recommended. It provides:
+- ✅ One-click sign-in for users
+- ✅ No need to remember passwords
+- ✅ Automatic profile photo
+- ✅ Better user experience
+
+If you skip Google OAuth, users can still sign up with email/password.
 
 ---
 
