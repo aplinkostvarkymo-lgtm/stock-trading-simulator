@@ -24,6 +24,7 @@ export default function RootLayout({
           strategy="lazyOnload"
           type="module"
         />
+        {/* @ts-ignore */}
         <zapier-interfaces-chatbot-embed 
           is-popup="true" 
           chatbot-id="cmk2to07x001anu002k2etvd8"
